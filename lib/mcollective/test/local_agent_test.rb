@@ -13,7 +13,7 @@ module MCollective
                 @agent = agent.to_s
                 @logger = create_logger_mock
                 @connector = create_connector_mock
-                @plugin = load_agent(agent)
+                @plugin = load_agent(agent, options[:agent_file])
 
                 create_facts_mock(facts)
 

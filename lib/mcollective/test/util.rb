@@ -21,13 +21,15 @@ module MCollective
                 cfg.stubs(:classesfile).returns("classes.txt")
                 cfg.stubs(:identity).returns("rspec_tests")
 
-                config.each_pair do |k, v|
-                    cfg.send(:stubs, k).returns(v)
-                end
+                if config
+                    config.each_pair do |k, v|
+                        cfg.send(:stubs, k).returns(v)
+                    end
 
-                if config.include?(:libdir)
-                    [config[:libdir]].flatten.each do |dir|
-                        $: << dir if File.exist?(dir)
+                    if config.include?(:libdir)
+                        [config[:libdir]].flatten.each do |dir|
+                            $: << dir if File.exist?(dir)
+                        end
                     end
                 end
 
@@ -69,11 +71,17 @@ module MCollective
                 MCollective::PluginManager["#{application}_application"]
             end
 
-            def load_agent(agent)
+            def load_agent(agent, agent_file=nil)
                 classname = "MCollective::Agent::#{agent.capitalize}"
 
                 MCollective::PluginManager.delete("#{agent}_agent")
-                MCollective::PluginManager.loadclass(classname)
+
+                if agent_file
+                    raise "Cannot find agent file #{agent_file} for agent #{agent}" unless File.exist?(agent_file)
+                    load agent_file
+                else
+                    MCollective::PluginManager.loadclass(classname)
+                end
 
                 # Stub out startup_hook as this feature should probably
                 # be deprecated and it's really hard to test
