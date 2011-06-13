@@ -93,8 +93,12 @@ module MCollective
                 MCollective::PluginManager["#{agent}_agent"]
             end
 
-            def create_response(senderid, data = {}, statuscode = 0, statusmsg = "OK")
-                {:senderid => senderid, :body =>{:data => data}}
+            def create_response(senderid, data = {}, stats = nil , statuscode = 0, statusmsg = "OK")
+                unless stats == nil
+                    {:senderid => senderid, :body =>{:data => data, :stats => stats}}
+                else
+                    {:senderid => senderid, :body =>{:data => data}}
+                end
             end
         end
     end
