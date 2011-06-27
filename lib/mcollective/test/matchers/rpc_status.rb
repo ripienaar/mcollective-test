@@ -21,6 +21,9 @@ module MCollective
                 end
 
                 def matches?(actual)
+                    if actual == []
+                        return false
+                    end
                     [actual].flatten.each do |result|
                         result = result.results if result.is_a?(MCollective::RPC::Result)
 
