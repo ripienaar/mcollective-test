@@ -16,8 +16,10 @@ module MCollective
                         @actual << result
                         @expected.each do |e|
                             if e.is_a? Hash
-                                unless result[:data].keys.include?(e.keys)
-                                    return false
+                                e.keys.each do |k|
+                                    unless result[:data].keys.include?(k)
+                                        return false
+                                    end
                                 end
                                 e.keys.each do |k|
                                     if e[k].is_a?(String) || e[k].is_a?(Regexp)
