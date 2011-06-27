@@ -16,7 +16,7 @@ module MCollective
                         @actual << result
                         @expected.each do |e|
                             if e.is_a? Hash
-                                unless result[:data].keys.include?(e.keys)
+                                if (e.keys.map{|k| result[:data].keys.include?(k)}.include?(false))
                                     return false
                                 end
                                 e.keys.each do |k|
