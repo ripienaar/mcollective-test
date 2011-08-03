@@ -14,7 +14,7 @@ module MCollective
                 @config = create_config_mock(config)
                 @application = application.to_s
                 @logger = create_logger_mock
-                @plugin = load_application(@application)
+                @plugin = load_application(@application, options[:application_file])
 
                 @plugin.stubs(:printrpcstats)
                 @plugin.stubs(:puts)

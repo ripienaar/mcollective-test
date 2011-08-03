@@ -62,10 +62,17 @@ module MCollective
                 connector
             end
 
-            def load_application(application)
+            def load_application(application, application_file=nil)
                 classname = "MCollective::Application::#{application.capitalize}"
                 MCollective::PluginManager.delete("#{application}_application")
-                MCollective::PluginManager.loadclass(classname)
+
+                if application_file
+                    raise "Cannot find application file #{application_file} for application #{application}" unless File.exist?(application_file)
+                    load application_file
+                else
+                    MCollective::PluginManager.loadclass(classname)
+                end
+
 
                 MCollective::PluginManager << {:type => "#{application}_application", :class => classname, :single_instance => false}
                 MCollective::PluginManager["#{application}_application"]
