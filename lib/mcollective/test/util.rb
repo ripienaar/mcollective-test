@@ -2,7 +2,7 @@ module MCollective
     module Test
         module Util
             def create_facts_mock(factsource)
-                facts = Mocha::Mock.new
+                facts = Mocha::Mock.new('facts')
                 facts.stubs(:get_facts).returns(factsource)
 
                 factsource.each_pair do |k, v|
@@ -13,7 +13,7 @@ module MCollective
             end
 
             def create_config_mock(config)
-                cfg = Mocha::Mock.new
+                cfg = Mocha::Mock.new('config')
                 cfg.stubs(:configured).returns(true)
                 cfg.stubs(:rpcauthorization).returns(false)
                 cfg.stubs(:main_collective).returns("mcollective")
