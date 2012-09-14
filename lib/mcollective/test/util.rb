@@ -20,6 +20,8 @@ module MCollective
         cfg.stubs(:collectives).returns(["production", "staging"])
         cfg.stubs(:classesfile).returns("classes.txt")
         cfg.stubs(:identity).returns("rspec_tests")
+        cfg.stubs(:logger_type).returns("console")
+        cfg.stubs(:loglevel).returns("error")
 
         if config
           config.each_pair do |k, v|
@@ -30,12 +32,19 @@ module MCollective
             [config[:libdir]].flatten.each do |dir|
               $: << dir if File.exist?(dir)
             end
+
+            cfg.stubs(:libdir).returns(config[:libdir])
           end
         end
 
         MCollective::Config.stubs(:instance).returns(cfg)
 
         cfg
+      end
+
+      def mock_validators
+        MCollective::Validator.stubs(:load_validators)
+        MCollective::Validator.stubs(:validate).returns(true)
       end
 
       def create_logger_mock
@@ -73,7 +82,6 @@ module MCollective
           MCollective::PluginManager.loadclass(classname)
         end
 
-
         MCollective::PluginManager << {:type => "#{application}_application", :class => classname, :single_instance => false}
         MCollective::PluginManager["#{application}_application"]
       end
@@ -94,7 +102,10 @@ module MCollective
         # be deprecated and it's really hard to test
 
         klass = MCollective::Agent.const_get(agent.capitalize)
+
+        klass.any_instance.stubs("load_ddl").returns(true)
         klass.any_instance.stubs(:startup_hook).returns(true)
+        MCollective::RPC::Request.any_instance.stubs(:validate!).returns(true)
 
         MCollective::PluginManager << {:type => "#{agent}_agent", :class => classname, :single_instance => false}
         MCollective::PluginManager["#{agent}_agent"]

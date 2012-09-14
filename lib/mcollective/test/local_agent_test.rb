@@ -16,6 +16,7 @@ module MCollective
         @plugin = load_agent(agent, options[:agent_file])
 
         create_facts_mock(facts)
+        mock_validators
 
         make_call_helper
       end
