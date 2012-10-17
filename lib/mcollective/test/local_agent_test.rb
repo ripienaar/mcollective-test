@@ -7,6 +7,7 @@ module MCollective
 
       def initialize(agent, options={})
         config = options[:config]
+
         facts = options[:facts] || {"fact" => "value"}
 
         @config = create_config_mock(config)

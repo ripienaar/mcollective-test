@@ -13,6 +13,8 @@ module MCollective
       end
 
       def create_config_mock(config)
+        pluginconf = {}
+
         cfg = Mocha::Mock.new('config')
         cfg.stubs(:configured).returns(true)
         cfg.stubs(:rpcauthorization).returns(false)
@@ -22,10 +24,14 @@ module MCollective
         cfg.stubs(:identity).returns("rspec_tests")
         cfg.stubs(:logger_type).returns("console")
         cfg.stubs(:loglevel).returns("error")
+        cfg.stubs(:pluginconf).returns(pluginconf)
 
         if config
           config.each_pair do |k, v|
             cfg.send(:stubs, k).returns(v)
+            if k =~ /^plugin.(.+)/
+              pluginconf[$1] = v
+            end
           end
 
           if config.include?(:libdir)
@@ -36,6 +42,7 @@ module MCollective
             cfg.stubs(:libdir).returns(config[:libdir])
           end
         end
+
 
         MCollective::Config.stubs(:instance).returns(cfg)
 
@@ -98,13 +105,9 @@ module MCollective
           MCollective::PluginManager.loadclass(classname)
         end
 
-        # Stub out startup_hook as this feature should probably
-        # be deprecated and it's really hard to test
-
         klass = MCollective::Agent.const_get(agent.capitalize)
 
         klass.any_instance.stubs("load_ddl").returns(true)
-        klass.any_instance.stubs(:startup_hook).returns(true)
         MCollective::RPC::Request.any_instance.stubs(:validate!).returns(true)
 
         MCollective::PluginManager << {:type => "#{agent}_agent", :class => classname, :single_instance => false}
