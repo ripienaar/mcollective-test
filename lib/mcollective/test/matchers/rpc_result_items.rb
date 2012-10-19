@@ -15,7 +15,12 @@ module MCollective
           end
 
           [actual].flatten.each do |result|
-            result = result.results if result.is_a?(MCollective::RPC::Result)
+            if result.is_a?(MCollective::RPC::Result)
+              result = result.results
+            elsif result.is_a?(MCollective::Data::Result)
+              result = {:data => result.instance_variable_get("@data")}
+            end
+
             @nodeid = result[:data][:test_sender]
             @actual << result
             @expected.each do |e|
