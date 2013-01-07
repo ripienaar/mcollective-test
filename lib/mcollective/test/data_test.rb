@@ -29,11 +29,13 @@ module MCollective
           PluginManager.loadclass(classname)
         end
 
-        klass = Data.const_get(data.capitalize)
-
         ddl = DDL::Base.new(data, :data, false)
 
         DDL.stubs(:new).with(data, :data).returns(ddl)
+
+        unless PluginManager.pluginlist.include?(data.downcase)
+          PluginManager << {:type => data, :class => "MCollective::Data::%s" % data.capitalize, :single_instance => false}
+        end
 
         PluginManager[data.downcase]
       end
