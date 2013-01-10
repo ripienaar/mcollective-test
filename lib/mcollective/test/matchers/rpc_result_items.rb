@@ -10,11 +10,19 @@ module MCollective
         end
 
         def matches?(actual)
+          # Data::Result has a bug in it's method missing in < 2.2.2 and < 2.3.0
+          # which raised the wrong exception class should someone call for example
+          # #to_ary like [x].flatten does causing the tests to fail, this works
+          # around that bug while we fix it in core.
+          unless actual.is_a?(Array)
+            actual = [actual]
+          end
+
           if actual == []
             return false
           end
 
-          [actual].flatten.each do |result|
+          actual.each do |result|
             if result.is_a?(MCollective::RPC::Result)
               result = result.results
             elsif result.is_a?(MCollective::Data::Result)

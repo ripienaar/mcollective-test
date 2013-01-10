@@ -4,7 +4,7 @@ require 'rspec/core/rake_task'
 
 spec = Gem::Specification.new do |s|
   s.name = "mcollective-test"
-  s.version = "0.4.0"
+  s.version = "0.4.1"
   s.author = "R.I.Pienaar"
   s.email = "rip@devco.net"
   s.homepage = "https://github.com/ripienaar/mcollective-test/"
