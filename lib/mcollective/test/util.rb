@@ -9,7 +9,7 @@ module MCollective
           facts.stubs(:get_fact).with(k).returns(v)
         end
 
-        MCollective::PluginManager << {:type => "facts_plugin", :class => facts, :single_instance => false}
+        PluginManager << {:type => "facts_plugin", :class => facts, :single_instance => false}
       end
 
       def create_config_mock(config)
@@ -44,14 +44,14 @@ module MCollective
         end
 
 
-        MCollective::Config.stubs(:instance).returns(cfg)
+        Config.stubs(:instance).returns(cfg)
 
         cfg
       end
 
       def mock_validators
-        MCollective::Validator.stubs(:load_validators)
-        MCollective::Validator.stubs(:validate).returns(true)
+        Validator.stubs(:load_validators)
+        Validator.stubs(:validate).returns(true)
       end
 
       def create_logger_mock
@@ -61,7 +61,9 @@ module MCollective
           logger.stubs(meth)
         end
 
-        MCollective::Log.configure(logger)
+        Log.stubs(:config_and_check_level).returns(false)
+
+        Log.configure(logger)
 
         logger
       end
@@ -73,45 +75,45 @@ module MCollective
           connector.stubs(meth)
         end
 
-        MCollective::PluginManager << {:type => "connector_plugin", :class => connector}
+        PluginManager << {:type => "connector_plugin", :class => connector}
 
         connector
       end
 
       def load_application(application, application_file=nil)
         classname = "MCollective::Application::#{application.capitalize}"
-        MCollective::PluginManager.delete("#{application}_application")
+        PluginManager.delete("#{application}_application")
 
         if application_file
           raise "Cannot find application file #{application_file} for application #{application}" unless File.exist?(application_file)
           load application_file
         else
-          MCollective::PluginManager.loadclass(classname)
+          PluginManager.loadclass(classname)
         end
 
-        MCollective::PluginManager << {:type => "#{application}_application", :class => classname, :single_instance => false}
-        MCollective::PluginManager["#{application}_application"]
+        PluginManager << {:type => "#{application}_application", :class => classname, :single_instance => false}
+        PluginManager["#{application}_application"]
       end
 
       def load_agent(agent, agent_file=nil)
         classname = "MCollective::Agent::#{agent.capitalize}"
 
-        MCollective::PluginManager.delete("#{agent}_agent")
+        PluginManager.delete("#{agent}_agent")
 
         if agent_file
           raise "Cannot find agent file #{agent_file} for agent #{agent}" unless File.exist?(agent_file)
           load agent_file
         else
-          MCollective::PluginManager.loadclass(classname)
+          PluginManager.loadclass(classname)
         end
 
-        klass = MCollective::Agent.const_get(agent.capitalize)
+        klass = Agent.const_get(agent.capitalize)
 
         klass.any_instance.stubs("load_ddl").returns(true)
-        MCollective::RPC::Request.any_instance.stubs(:validate!).returns(true)
+        RPC::Request.any_instance.stubs(:validate!).returns(true)
 
-        MCollective::PluginManager << {:type => "#{agent}_agent", :class => classname, :single_instance => false}
-        MCollective::PluginManager["#{agent}_agent"]
+        PluginManager << {:type => "#{agent}_agent", :class => classname, :single_instance => false}
+        PluginManager["#{agent}_agent"]
       end
 
       def create_response(senderid, data = {}, stats = nil , statuscode = 0, statusmsg = "OK")

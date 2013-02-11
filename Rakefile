@@ -1,10 +1,10 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rspec/core/rake_task'
 
 spec = Gem::Specification.new do |s|
   s.name = "mcollective-test"
-  s.version = "0.4.1"
+  s.version = "0.4.2"
   s.author = "R.I.Pienaar"
   s.email = "rip@devco.net"
   s.homepage = "https://github.com/ripienaar/mcollective-test/"
@@ -15,7 +15,7 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = false
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar = true
 end
 
