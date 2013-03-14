@@ -30,6 +30,7 @@ module MCollective
         end
 
         ddl = DDL::Base.new(data, :data, false)
+        ddl.stubs(:dataquery_interface).returns(:output => {})
 
         DDL.stubs(:new).with(data, :data).returns(ddl)
 
