@@ -1,8 +1,10 @@
 module MCollective
   module Test
     module Util
+      include Mocha::API
+
       def create_facts_mock(factsource)
-        facts = Mocha::Mock.new('facts')
+        facts = mock('facts')
         facts.stubs(:get_facts).returns(factsource)
 
         factsource.each_pair do |k, v|
@@ -15,7 +17,7 @@ module MCollective
       def create_config_mock(config)
         pluginconf = {}
 
-        cfg = Mocha::Mock.new('config')
+        cfg = mock('config')
         cfg.stubs(:configured).returns(true)
         cfg.stubs(:rpcauthorization).returns(false)
         cfg.stubs(:main_collective).returns("mcollective")
@@ -55,7 +57,7 @@ module MCollective
       end
 
       def create_logger_mock
-        logger = Mocha::Mock.new(:logger)
+        logger = mock(:logger)
 
         [:log, :start, :debug, :info, :warn].each do |meth|
           logger.stubs(meth)
@@ -69,7 +71,7 @@ module MCollective
       end
 
       def create_connector_mock
-        connector = Mocha::Mock.new(:connector)
+        connector = mock(:connector)
 
         [:connect, :receive, :publish, :subscribe, :unsubscribe, :disconnect].each do |meth|
           connector.stubs(meth)

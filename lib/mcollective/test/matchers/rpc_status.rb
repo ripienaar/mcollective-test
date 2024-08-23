@@ -1,48 +1,29 @@
-module MCollective
-  module Test
-    module Matchers
-      def rpc_success; RPCStatus.new(0); end
-      def rpc_aborted; RPCStatus.new(1); end
-      def rpc_unknown_action; RPCStatus.new(2); end
-      def rpc_missing_data; RPCStatus.new(3); end
-      def rpc_invalid_data; RPCStatus.new(4); end
-      def rpc_unknown; RPCStatus.new(5); end
+{
+  0 => :rpc_success,
+  1 => :rpc_aborted,
+  2 => :rpc_unknown_action,
+  3 => :rpc_missing_data,
+  4 => :rpc_invalid_data,
+  5 => :rpc_unknown
+}.each do |code, name|
+  RSpec::Matchers.define(name) do
+    match do |actual|
+      actual[:statuscode] == code
+    end
 
-      alias be_successful rpc_success
-      alias be_aborted_error rpc_aborted
-      alias be_unknown_action_error rpc_unknown_action
-      alias be_missing_data_error rpc_missing_data
-      alias be_invalid_data_error rpc_invalid_data
-      alias be_unknown_error rpc_unknown
+    failure_message do |actual|
+      "expected :statuscode == #{code} but got #{actual[:statuscode]}"
+    end
 
-      class RPCStatus
-        def initialize(code)
-          @code = code
-        end
-
-        def matches?(actual)
-          if actual == []
-            return false
-          end
-          [actual].flatten.each do |result|
-            result = result.results if result.is_a?(MCollective::RPC::Result)
-
-            @actual = result[:statuscode]
-
-            unless @actual == @code
-              return false
-            end
-          end
-        end
-
-        def failure_message
-          "expected :statuscode == #{@code} but got '#{@actual}'"
-        end
-
-        def negative_failure_message
-          "expected :statucode != #{@code} but got '#{@actual}'"
-        end
-      end
+    failure_message_when_negated do |actual|
+      "expected :statuscode != #{code} but got #{actual[:statuscode]}"
     end
   end
 end
+
+RSpec::Matchers.alias_matcher :be_successful, :rpc_success
+RSpec::Matchers.alias_matcher :be_aborted_error, :rpc_aborted
+RSpec::Matchers.alias_matcher :be_unknown_error, :rpc_unknown_action
+RSpec::Matchers.alias_matcher :be_missing_data_error, :rpc_missing_data
+RSpec::Matchers.alias_matcher :be_invalid_data_error, :rpc_invalid_data
+RSpec::Matchers.alias_matcher :be_unknown_error, :rpc_unknown
