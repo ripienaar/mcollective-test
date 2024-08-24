@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = "mcollective-test"
-  s.version = "0.4.3"
+  s.version = "0.5.0"
   s.author = "R.I.Pienaar"
   s.email = "rip@devco.net"
   s.homepage = "https://github.com/ripienaar/mcollective-test/"
